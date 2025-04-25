@@ -10,7 +10,7 @@ from rest_framework.viewsets import ModelViewSet
 
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = UsoCFDISerializer
 
 class PasswordCuentaEspecialViewset(ModelViewSet):
