@@ -6,7 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.hashers import make_password, check_password
 from api.utils import TipoCuenta
-
+from django.contrib.auth import authenticate
 #serializador para autenticación
 class serializadorObtenerParToken(TokenObtainPairSerializer):
     @classmethod
@@ -199,5 +199,18 @@ class PerfilDashboardSerializador(serializers.ModelSerializer):
             for field in self.fields.values():
                 field.required = False
     
-    
+#Serializador para la app de escritorio Login   
+class ValidarUsuarioSimpleSerializer(serializers.Serializer):
+    correoElectronico = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(
+            username=data["correoElectronico"],
+            password=data["password"]
+        )
+        if user is None:
+            raise serializers.ValidationError("Correo o contraseña incorrectos")
+        data["usuario"] = user
+        return data
 

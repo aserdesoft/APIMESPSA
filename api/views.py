@@ -8,6 +8,7 @@ from api.utils import TipoCuenta
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
     permission_classes = [AllowAny]
@@ -82,3 +83,10 @@ class ValidarCuentaEspecialView(APIView):
             return Response({"mensaje": "OK"}, status=status.HTTP_200_OK)
 
         return Response({"mensaje": "ERROR", "detalles": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+#Vista para el login desde la app de escritorio
+class LoginWinFormsView(APIView):
+    def post(self, request):
+        serializer = ValidarUsuarioSimpleSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"resultado": "OK"}, status=status.HTTP_200_OK)
+        return Response({"resultado": "ERROR"}, status=status.HTTP_401_UNAUTHORIZED)

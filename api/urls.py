@@ -15,4 +15,5 @@ urlpatterns = [
     path("validarCuentaEsp/",ValidarCuentaEspecialView.as_view()),
     path("dashboard/perfil/", PerfilUsuarioAPIView.as_view(), name="perfil-usuario"),
     path("personas/",ObtenerPersonasView.as_view()),
+    path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
 ]
