@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from api.utils import TipoCuenta
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
+from rest_framework import filters
 
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
@@ -91,7 +91,14 @@ class LoginWinFormsView(APIView):
             return Response({"resultado": "OK"}, status=status.HTTP_200_OK)
         return Response({"resultado": "ERROR"}, status=status.HTTP_401_UNAUTHORIZED)
     
+
 class ListarUsuariosView(generics.ListAPIView):
-    queryset = Perfil.objects.all()
+    permission_classes = [AllowAny]
     serializer_class = PerfilDashboardSerializador
-    permission_classes = [AllowAny]  
+
+    def get_queryset(self):
+        queryset = Perfil.objects.all()
+        tipo_cuenta = self.request.query_params.get('tipoCuenta', None)
+        if tipo_cuenta is not None:
+            queryset = queryset.filter(tipoCuenta=tipo_cuenta)
+        return queryset
