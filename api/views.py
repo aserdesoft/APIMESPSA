@@ -90,3 +90,8 @@ class LoginWinFormsView(APIView):
         if serializer.is_valid():
             return Response({"resultado": "OK"}, status=status.HTTP_200_OK)
         return Response({"resultado": "ERROR"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+class ListarUsuariosView(generics.ListAPIView):
+    queryset = Perfil.objects.all()
+    serializer_class = PerfilDashboardSerializador
+    permission_classes = [IsAuthenticated]  
