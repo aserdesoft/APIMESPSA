@@ -94,4 +94,4 @@ class LoginWinFormsView(APIView):
 class ListarUsuariosView(generics.ListAPIView):
     queryset = Perfil.objects.all()
     serializer_class = PerfilDashboardSerializador
-    permission_classes = [IsAuthenticated]  
+    permission_classes = [AllowAny]  
