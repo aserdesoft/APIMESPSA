@@ -102,3 +102,10 @@ class ListarUsuariosView(generics.ListAPIView):
         if tipo_cuenta is not None:
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
+    
+class ActualizarUsuarioView(generics.UpdateAPIView):
+    queryset = Usuario.objects.all()
+    serializer_class = RegistrarSerializador
+    permission_classes = (AllowAny, )  # O pon la restricción que necesites
+
+    lookup_field = 'id' 
