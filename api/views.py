@@ -104,12 +104,8 @@ class ListarUsuariosView(generics.ListAPIView):
         return queryset
     
 class ActualizarUsuarioAPIView(APIView):
-    def put(self, request, correoElectronico):
-        try:
-            usuario = Usuario.objects.get(correoElectronico=correoElectronico)
-        except Usuario.DoesNotExist:
-            return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-
+    def patch(self, request, pk):  # Cambiado de correoElectronico a pk
+        usuario = get_object_or_404(Usuario, pk=pk)
         serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

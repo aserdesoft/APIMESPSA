@@ -214,3 +214,21 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
         data["usuario"] = user
         return data
 
+class UsuarioSerializer(serializers.ModelSerializer):
+    perfil = PerfilDashboardSerializador(required=False)
+
+    class Meta:
+        model = Usuario
+        fields = ["correoElectronico", "perfil"]
+
+    def update(self, instance, validated_data):
+        perfil_data = validated_data.pop('perfil', None)
+        instance = super().update(instance, validated_data)
+
+        if perfil_data:
+            perfil_instance = instance.perfil
+            for attr, value in perfil_data.items():
+                setattr(perfil_instance, attr, value)
+            perfil_instance.save()
+
+        return instance
