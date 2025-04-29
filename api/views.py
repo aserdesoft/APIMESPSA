@@ -103,9 +103,15 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
     
-class ActualizarUsuarioView(generics.UpdateAPIView):
-    queryset = Usuario.objects.all()
-    serializer_class = RegistrarSerializador
-    permission_classes = (AllowAny, )  # O pon la restricción que necesites
+class ActualizarUsuarioAPIView(APIView):
+    def put(self, request, correoElectronico):
+        try:
+            usuario = Usuario.objects.get(correoElectronico=correoElectronico)
+        except Usuario.DoesNotExist:
+            return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
-    lookup_field = 'id' 
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

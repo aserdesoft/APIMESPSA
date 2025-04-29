@@ -17,5 +17,5 @@ urlpatterns = [
     path("personas/",ObtenerPersonasView.as_view()),
     path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
     path("listar-usuarios/", ListarUsuariosView.as_view(), name="listar-usuarios"),
-    path('usuarios/<int:id>/', ActualizarUsuarioView.as_view(), name='actualizar-usuario'),
+    path('api/actualizar-usuario/<str:correoElectronico>/', ActualizarUsuarioAPIView.as_view(), name='actualizar-usuario'),
 ]
