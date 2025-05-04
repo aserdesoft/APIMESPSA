@@ -1,5 +1,5 @@
 #serializadores para los objetos entre la base de datos y la API
-from api.models import Usuario,Perfil,UsoCFDI,PasswordCuentaEspecial
+from api.models import Usuario,Perfil,UsoCFDI,PasswordCuentaEspecial,PerfilSerializer
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -215,20 +215,6 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
         return data
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    perfil = PerfilDashboardSerializador(required=False)
-
     class Meta:
         model = Usuario
-        fields = ["correoElectronico", "perfil"]
-
-    def update(self, instance, validated_data):
-        perfil_data = validated_data.pop('perfil', None)
-        instance = super().update(instance, validated_data)
-
-        if perfil_data:
-            perfil_instance = instance.perfil
-            for attr, value in perfil_data.items():
-                setattr(perfil_instance, attr, value)
-            perfil_instance.save()
-
-        return instance
+        fields = '__all__'

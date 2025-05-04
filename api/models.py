@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import (check_password,make_password,)
 from api.utils import TipoCuenta,TipoEmpleado,TipoPersona
+from rest_framework import serializers
 #Modelo para manejar información de CCFDI
 class UsoCFDI(models.Model):
     usoCFDI = models.CharField(max_length = 3, unique=True,primary_key=True)
