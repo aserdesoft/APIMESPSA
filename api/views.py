@@ -104,9 +104,7 @@ class ListarUsuariosView(generics.ListAPIView):
         return queryset
     
 class ActualizarUsuarioView(generics.UpdateAPIView):
-    serializer_class = UsuarioSerializer
-    queryset = Usuario.objects.all()
-    permission_classes = [AllowAny]
-    def put(self, request, *args, **kwargs):
-        # permitimos actualizar parcialmente si no se envían todos los campos
-        return self.partial_update(request, *args, **kwargs)
+    serializer_class = PerfilSerializer
+    queryset = Perfil.objects.all()
+    def get_object(self):
+        return self.get_queryset().get(usuario__id=self.kwargs['pk'])

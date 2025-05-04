@@ -217,5 +217,14 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = ['id', 'nombre', 'apellidos', 'telefono', 'correo_electronico',
-                  'rfc', 'calle', 'colonia', 'num_ext', 'num_int', 'tipo_cuenta']
+        fields = ['correoElectronico', 'password', 'is_staff', 'is_superuser', 'is_active']
+class PerfilSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Perfil
+        fields = [
+            'apellidos', 'nombre', 'telefono', 'tipoCuenta', 'usuario',
+            'tipoEmpleado', 'tipoPersona', 'RFC', 'calle', 'numExt', 
+            'numInt', 'colonia', 'codigoPostal', 'localidad', 
+            'municipio', 'estado', 'nomEmpresa', 'referencia', 
+            'usoCFDI', 'cuentaBancaria', 'CLABE', 'Banco', 'constanciaFiscal'
+        ]
