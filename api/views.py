@@ -103,31 +103,10 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
     
-class EditarPerfilView(APIView):
-    def get_object(self, pk):
-        try:
-            return Perfil.objects.get(usuario__id=pk)
-        except Perfil.DoesNotExist:
-            return None
-
-    def put(self, request, pk):
-        perfil = self.get_object(pk)
-        if perfil is None:
-            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = PerfilUsuarioSerializer(perfil, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request, pk):  # <--- Agrega este método
-        perfil = self.get_object(pk)
-        if perfil is None:
-            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = PerfilUsuarioSerializer(perfil, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ActualizarUsuarioView(generics.UpdateAPIView):
+    serializer_class = UsuarioSerializer
+    queryset = Usuario.objects.all()
+    permission_classes = [AllowAny]
+    def put(self, request, *args, **kwargs):
+        # permitimos actualizar parcialmente si no se envían todos los campos
+        return self.partial_update(request, *args, **kwargs)

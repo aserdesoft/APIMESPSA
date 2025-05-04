@@ -214,22 +214,8 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
         data["usuario"] = user
         return data
 
-class PerfilUsuarioSerializer(serializers.ModelSerializer):
-    correoElectronico = serializers.EmailField(source='usuario.correoElectronico')
-
+class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Perfil
-        fields = [
-            'correoElectronico', 'apellidos', 'nombre', 'telefono', 'tipoCuenta',
-            'tipoEmpleado', 'tipoPersona', 'RFC', 'calle', 'numExt', 'numInt',
-            'colonia', 'codigoPostal', 'localidad', 'municipio', 'estado',
-            'nomEmpresa', 'referencia', 'usoCFDI', 'cuentaBancaria', 'CLABE',
-            'Banco', 'constanciaFiscal'
-        ]
-
-    def update(self, instance, validated_data):
-        usuario_data = validated_data.pop('usuario', {})
-        if 'correoElectronico' in usuario_data:
-            instance.usuario.correoElectronico = usuario_data['correoElectronico']
-            instance.usuario.save()
-        return super().update(instance, validated_data)
+        model = Usuario
+        fields = ['id', 'nombre', 'apellidos', 'telefono', 'correo_electronico',
+                  'rfc', 'calle', 'colonia', 'num_ext', 'num_int', 'tipo_cuenta']
