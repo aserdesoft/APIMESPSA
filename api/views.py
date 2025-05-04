@@ -104,13 +104,29 @@ class ListarUsuariosView(generics.ListAPIView):
         return queryset
     
 class EditarPerfilView(APIView):
-    def put(self, request, pk):
+    def get_object(self, pk):
         try:
-            perfil = Perfil.objects.get(usuario__id=pk)
+            return Perfil.objects.get(usuario__id=pk)
         except Perfil.DoesNotExist:
+            return None
+
+    def put(self, request, pk):
+        perfil = self.get_object(pk)
+        if perfil is None:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = PerfilUsuarioSerializer(perfil, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):  # <--- Agrega este método
+        perfil = self.get_object(pk)
+        if perfil is None:
+            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PerfilUsuarioSerializer(perfil, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
