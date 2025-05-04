@@ -217,4 +217,12 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = '__all__'
+        fields = [
+            "correoElectronico", "apellidos", "nombre", "telefono",
+            "tipoCuenta", "tipoEmpleado", "tipoPersona", "RFC",
+            "calle", "numExt", "numInt", "colonia", "codigoPostal",
+            "localidad", "municipio", "estado", "nomEmpresa", "referencia",
+            "usoCFDI", "cuentaBancaria", "CLABE", "Banco", "constanciaFiscal"
+        ]
+        extra_kwargs = {field: {"required": False, "allow_null": True, "allow_blank": True}
+                        for field in fields}

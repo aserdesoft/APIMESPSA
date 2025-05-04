@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register('CFDI',UsoCFDIViewset,'usocfdi')
 router.register('passwords',PasswordCuentaEspecialViewset,'passwords')
-
+router.register('usuarios', UsuarioViewSet, basename='usuarios')
 urlpatterns = [
     path('',include(router.urls)),
     path("token/",obtenerParTokenView.as_view()),
@@ -17,6 +17,4 @@ urlpatterns = [
     path("personas/",ObtenerPersonasView.as_view()),
     path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
     path("listar-usuarios/", ListarUsuariosView.as_view(), name="listar-usuarios"),
-    path('usuarios/<int:pk>/', UsuarioController.as_view()),
-    path('usuarios/', UsuarioController.as_view()),
 ]
