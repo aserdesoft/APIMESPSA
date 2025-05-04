@@ -8,7 +8,7 @@ from api.utils import TipoCuenta
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters
-
+from django.shortcuts import get_object_or_404
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
     permission_classes = [AllowAny]
@@ -103,3 +103,21 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
     
+class UsuarioController(APIView):
+
+    def get(self, request, pk=None):
+        if pk:
+            usuario = get_object_or_404(Usuario, pk=pk)
+            serializer = UsuarioSerializer(usuario)
+        else:
+            usuarios = Usuario.objects.all()
+            serializer = UsuarioSerializer(usuarios, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        usuario = get_object_or_404(Usuario, pk=pk)
+        serializer = UsuarioSerializer(usuario, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
