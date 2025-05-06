@@ -8,15 +8,15 @@ from api.utils import TipoCuenta
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = UsoCFDISerializer
 
 class PasswordCuentaEspecialViewset(ModelViewSet):
     queryset = PasswordCuentaEspecial.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     serializer_class = PasswordCuentaEspecialSerializador
 
 class obtenerParTokenView(TokenObtainPairView):
@@ -37,7 +37,7 @@ class ObtenerCuentasView(generics.RetrieveAPIView):
         return Response({"combinaciones": combinaciones})
 
 class ObtenerPersonasView(generics.RetrieveAPIView):
-    permission_classes = (AllowAny, )
+    permission_classes = [AllowAny,IsAuthenticated,IsAdminUser]
     def get(self,request=None):
         # Obtenemos las combinaciones de la clase TipoCuenta
         personas = TipoCuenta.personas()

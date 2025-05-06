@@ -1,5 +1,5 @@
 #serializadores para los objetos entre la base de datos y la API
-from api.models import Usuario,Perfil,UsoCFDI,PasswordCuentaEspecial,PerfilSerializer
+from api.models import Usuario,Perfil,UsoCFDI,PasswordCuentaEspecial
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -167,37 +167,29 @@ class PerfilDashboardSerializador(serializers.ModelSerializer):
     class Meta:
         model = Perfil
         fields = [
-            "correoElectronico",
-            "apellidos",
-            "nombre",
-            "telefono",
-            "tipoCuenta",
-            "tipoEmpleado",
-            "tipoPersona",
-            "RFC",
-            "calle",
-            "numExt",
-            "numInt",
-            "colonia",
-            "codigoPostal",
-            "localidad",
-            "municipio",
-            "estado",
-            "nomEmpresa",
-            "referencia",
-            "usoCFDI",
-            "cuentaBancaria",
-            "CLABE",
-            "Banco",
-            "constanciaFiscal",
+            "correoElectronico", "apellidos", "nombre", "telefono", "tipoCuenta",
+            "tipoEmpleado", "tipoPersona", "RFC", "calle", "numExt", "numInt",
+            "colonia", "codigoPostal", "localidad", "municipio", "estado",
+            "nomEmpresa", "referencia", "usoCFDI", "cuentaBancaria", "CLABE",
+            "Banco", "constanciaFiscal",
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if kwargs.get('partial', False):
-            # Hacer todos los campos opcionales para permitir PATCH parcial
+        if kwargs.get('partial', True):
             for field in self.fields.values():
                 field.required = False
+
+    def validate(self, attrs):
+        campos_mayus = [
+            "RFC", "Banco", "cuentaBancaria", "calle", "colonia",
+            "localidad", "municipio", "estado"
+        ]
+        for campo in campos_mayus:
+            valor = attrs.get(campo)
+            if isinstance(valor, str):
+                attrs[campo] = valor.upper()
+        return attrs
     
 #Serializador para la app de escritorio Login   
 class ValidarUsuarioSimpleSerializer(serializers.Serializer):
