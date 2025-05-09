@@ -8,6 +8,7 @@ from api.utils import TipoCuenta
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters
+from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
@@ -102,7 +103,8 @@ class ListarUsuariosView(generics.ListAPIView):
         if tipo_cuenta is not None:
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
-    
+
+@api_view(["PATCH"])
 def editar_usuario_por_correo(request, correo):
     try:
         usuario = Usuario.objects.get(correoElectronico=correo)
