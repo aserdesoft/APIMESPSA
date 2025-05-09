@@ -103,18 +103,17 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
     
-class ActualizarUsuarioPorCorreoView(APIView):
-    def patch(self, request, correo):
-        try:
-            usuario = Usuario.objects.get(correoElectronico=correo)
-            perfil = usuario.perfil
-        except Usuario.DoesNotExist:
-            return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        except Perfil.DoesNotExist:
-            return Response({"error": "Perfil no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+def editar_usuario_por_correo(request, correo):
+    try:
+        usuario = Usuario.objects.get(correoElectronico=correo)
+        perfil = usuario.perfil
+    except Usuario.DoesNotExist:
+        return Response({"error": "Usuario no encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PerfilDashboardSerializador(perfil, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+    serializer = PerfilEdicionParcialSerializador(perfil, data=request.data, partial=True)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

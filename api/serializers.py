@@ -206,3 +206,10 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
         data["usuario"] = user
         return data
 
+class PerfilEdicionParcialSerializador(serializers.ModelSerializer):
+    class Meta:
+        model = Perfil
+        fields = '__all__'
+        extra_kwargs = {
+            field.name: {'required': False} for field in Perfil._meta.fields
+        }
