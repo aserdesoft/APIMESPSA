@@ -205,7 +205,6 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
             raise serializers.ValidationError("Correo o contraseña incorrectos")
         data["usuario"] = user
         return data
-
 class PerfilEdicionParcialSerializador(serializers.ModelSerializer):
     class Meta:
         model = Perfil
