@@ -107,7 +107,7 @@ class ListarUsuariosView(generics.ListAPIView):
 @api_view(["PATCH"])
 def editar_usuario_por_correo(request, correo):
     try:
-        usuario = Usuario.objects.get(correoElectronico=correo)
+        usuario = Usuario.objects.get(correoElectronico__iexact=correo)
         perfil = usuario.perfil
     except Usuario.DoesNotExist:
         return Response({"error": "Usuario no encontrado."}, status=status.HTTP_404_NOT_FOUND)
