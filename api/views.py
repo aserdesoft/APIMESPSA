@@ -103,8 +103,17 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
     
-class ActualizarUsuarioView(generics.UpdateAPIView):
-    serializer_class = PerfilSerializer
-    queryset = Perfil.objects.all()
-    def get_object(self):
-        return self.get_queryset().get(usuario__id=self.kwargs['pk'])
+class ActualizarUsuarioPorCorreoView(APIView):
+    permission_classes = [IsAuthenticated]  # o AllowAny si lo quieres sin auth
+
+    def patch(self, request, correoElectronico):
+        try:
+            perfil = Perfil.objects.get(usuario__correoElectronico=correoElectronico)
+        except Perfil.DoesNotExist:
+            return Response({"error": "Perfil no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PerfilDashboardSerializador(perfil, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
