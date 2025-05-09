@@ -104,11 +104,12 @@ class ListarUsuariosView(generics.ListAPIView):
         return queryset
     
 class ActualizarUsuarioPorCorreoView(APIView):
-    permission_classes = [IsAuthenticated]  # o AllowAny si lo quieres sin auth
-
-    def patch(self, request, correoElectronico):
+    def patch(self, request, correo):
         try:
-            perfil = Perfil.objects.get(usuario__correoElectronico=correoElectronico)
+            usuario = Usuario.objects.get(correoElectronico=correo)
+            perfil = usuario.perfil
+        except Usuario.DoesNotExist:
+            return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
         except Perfil.DoesNotExist:
             return Response({"error": "Perfil no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
