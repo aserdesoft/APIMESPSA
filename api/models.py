@@ -84,7 +84,7 @@ class Perfil(models.Model):
     RFC = models.CharField(max_length=13, unique=True, null=True, default=None)
     calle = models.CharField(max_length=300, blank=True, default="")
     numExt = models.PositiveIntegerField(null= True, default=None)
-    numInt = models.PositiveIntegerField(null= True, default=None)
+    numInt = models.CharField(max_length=50, blank=True, default="")
     colonia = models.CharField(max_length=300, blank=True, default="")
     codigoPostal = models.PositiveIntegerField(null= True,default=None)
     localidad =models.CharField(max_length=300, blank=True, default="")
@@ -108,6 +108,7 @@ class Perfil(models.Model):
                 raise ValidationError({field: f"Este campo es obligatorio"})
             if field == "apellidos" or field == "nombre":
                 setattr(self,field,value.upper())
+        
 
     def save(self, *args, **kwargs):
         self.clean()

@@ -7,9 +7,7 @@ from rest_framework.response import Response
 from api.utils import TipoCuenta
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import filters
 from rest_framework.decorators import api_view
-from django.shortcuts import get_object_or_404
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
     permission_classes = [IsAuthenticated]
@@ -38,7 +36,7 @@ class ObtenerCuentasView(generics.RetrieveAPIView):
         return Response({"combinaciones": combinaciones})
 
 class ObtenerPersonasView(generics.RetrieveAPIView):
-    permission_classes = [AllowAny,IsAuthenticated,IsAdminUser]
+    permission_classes = (AllowAny,IsAuthenticated)
     def get(self,request=None):
         # Obtenemos las combinaciones de la clase TipoCuenta
         personas = TipoCuenta.personas()
