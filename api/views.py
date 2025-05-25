@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view
 from .serializers import UsuarioSerializer
+from django.shortcuts import get_object_or_404
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
     permission_classes = [IsAuthenticated]
@@ -103,15 +104,13 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
 
-class EditarUsuarioPorCorreoView(APIView):
+class EditarUsuarioPorCorreoAPIView(APIView):
     def patch(self, request, correo):
-        try:
-            usuario = Usuario.objects.get(CorreoElectronico__iexact=correo)
-        except Usuario.DoesNotExist:
-            return Response({"error": f"Usuario con correo '{correo}' no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-
+        usuario = get_object_or_404(Usuario, correo_electronico=correo)
         serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

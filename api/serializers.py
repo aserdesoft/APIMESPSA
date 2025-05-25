@@ -131,7 +131,7 @@ class RegistrarSerializador(serializers.ModelSerializer):
 
         tipo_cuenta = perfil_data.get("tipoCuenta")
         if tipo_cuenta == TipoCuenta.EMPLEADO:
-            user = Usuario.objects.create_empleado(
+            user = UsuarioSerializer.objects.create_empleado(
                 correoElectronico=validated_data["correoElectronico"],
                 password=validated_data["password"]
             )
@@ -239,3 +239,7 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
         
         data["usuario"] = user
         return data
+class UsuarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = '__all__' 
