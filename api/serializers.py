@@ -239,10 +239,15 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
         
         data["usuario"] = user
         return data
-class PerfilEdicionParcialSerializador(serializers.ModelSerializer):
-    class Meta:
-        model = Perfil
-        fields = '__all__'
-        extra_kwargs = {
-            field.name: {'required': False} for field in Perfil._meta.fields
-        }
+class EditarUsuarioPorCorreoView(APIView):
+    def patch(self, request, correo):
+        try:
+            usuario = Usuario.objects.get(CorreoElectronico=correo)
+        except Usuario.DoesNotExist:
+            return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
