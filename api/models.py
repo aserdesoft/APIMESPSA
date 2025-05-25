@@ -74,8 +74,8 @@ class Perfil(models.Model):
     # Datos requeridos para el registro
     apellidos = models.CharField(max_length=150,default="")
     nombre = models.CharField(max_length=150,default="")
-    telefono = models.CharField(max_length=20, default="")
-    tipoCuenta = models.CharField(max_length=50,choices=TipoCuenta.choices,default=TipoCuenta.CLIENTE)
+    telefono = models.CharField(max_length=10, default="")
+    tipoCuenta = models.CharField(max_length=3,choices=TipoCuenta.choices,default=TipoCuenta.CLIENTE)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name="perfil")
     #Datos para gestión de cuentas de proveedores y empleados
     tipoEmpleado =  models.CharField(max_length=50,choices=TipoEmpleado.choices, null=True ,default=None)
