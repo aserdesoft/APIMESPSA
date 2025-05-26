@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view
 from .serializers import UsuarioSerializer
+from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from django.shortcuts import get_object_or_404
 class UsoCFDIViewset(ModelViewSet):
