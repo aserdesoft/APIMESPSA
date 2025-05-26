@@ -106,21 +106,15 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
 
-class ActualizarUsuarioPorApellidosView(APIView):
-    def patch(self, request, apellidos):
-        usuarios = Usuario.objects.filter(apellidos__iexact=apellidos)
-
-        if not usuarios.exists():
+class UsuarioEditarPorCorreoAPIView(APIView):
+    def patch(self, request, correo):
+        try:
+            usuario = Usuario.objects.get(correoElectronico=correo)
+        except Usuario.DoesNotExist:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
-        if usuarios.count() > 1:
-            return Response({'error': 'Hay múltiples usuarios con esos apellidos. Especifica mejor.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        usuario = usuarios.first()
         serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
-
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

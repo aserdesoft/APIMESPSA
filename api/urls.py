@@ -1,6 +1,7 @@
 from django.urls import path,include
 from rest_framework_simplejwt.views import TokenRefreshView
 from api.views import *
+from .views import UsuarioEditarPorCorreoAPIView
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register('CFDI',UsoCFDIViewset,'usocfdi')
@@ -17,5 +18,6 @@ urlpatterns = [
     path("personas/",ObtenerPersonasView.as_view()),
     path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
     path("listar-usuarios/", ListarUsuariosView.as_view(), name="listar-usuarios"),
-   path("usuarios/editar-usuario-por-apellidos/<str:apellidos>/", ActualizarUsuarioPorApellidosView.as_view(), name="actualizar-usuario-apellidos"),
+   path('api/usuarios/editar-usuario-por-correo/<str:correo>/', UsuarioEditarPorCorreoAPIView.as_view()),
+
 ]
