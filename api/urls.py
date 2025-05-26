@@ -3,7 +3,6 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from api.views import *
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
-router.register('usuarios', UsuarioViewSet, basename='usuario') 
 router.register('CFDI',UsoCFDIViewset,'usocfdi')
 router.register('passwords',PasswordCuentaEspecialViewset,'passwords')
 
@@ -18,5 +17,5 @@ urlpatterns = [
     path("personas/",ObtenerPersonasView.as_view()),
     path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
     path("listar-usuarios/", ListarUsuariosView.as_view(), name="listar-usuarios"),
-   
+   path("usuarios/editar-usuario-por-apellidos/<str:apellidos>/", ActualizarUsuarioPorApellidosView.as_view(), name="actualizar-usuario-apellidos"),
 ]

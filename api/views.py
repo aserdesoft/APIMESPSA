@@ -106,23 +106,21 @@ class ListarUsuariosView(generics.ListAPIView):
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
 
-class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
-
-    @action(detail=False, methods=['patch'], url_path='editar-usuario-por-apellidos/(?P<apellidos>[^/.]+)')
-    def actualizar_por_apellidos(self, request, apellidos=None):
+class ActualizarUsuarioPorApellidosView(APIView):
+    def patch(self, request, apellidos):
         usuarios = Usuario.objects.filter(apellidos__iexact=apellidos)
 
         if not usuarios.exists():
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
         if usuarios.count() > 1:
             return Response({'error': 'Hay múltiples usuarios con esos apellidos. Especifica mejor.'}, status=status.HTTP_400_BAD_REQUEST)
 
         usuario = usuarios.first()
-        serializer = self.get_serializer(usuario, data=request.data, partial=True)
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
