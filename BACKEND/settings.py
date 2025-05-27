@@ -43,6 +43,7 @@ if RENDER_EXTERNAL_HOSTNAME:
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        
     ),
     #'DEFAULT_PERMISSION_CLASSES': (
         #'rest_framework.permissions.AllowAny', 
@@ -51,7 +52,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=50),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=1),
 }
 
 # Application definition
@@ -86,7 +87,9 @@ ROOT_URLCONF = 'BACKEND.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -98,6 +101,15 @@ TEMPLATES = [
         },
     },
 ]
+if DEBUG == True:
+    # Email settings
+    EMAIL_BACKEND = env("EMAIL_BACKEND")
+    EMAIL_HOST = env("EMAIL_HOST")
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+    EMAIL_PORT = env("EMAIL_PORT")
+    EMAIL_USE_SSL = env("EMAIL_USE_SSL")
+
 
 WSGI_APPLICATION = 'BACKEND.wsgi.application'
 
@@ -174,5 +186,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOWS_CREDENTIALS=True
+SESSION_COOKIE_SECURE = 'RENDER' not in os.environ
+#CSRF_COOKIE_SECURE = True
 
 AUTH_USER_MODEL = "api.Usuario"

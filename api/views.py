@@ -8,10 +8,12 @@ from api.utils import TipoCuenta
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view
-from .serializers import UsuarioSerializer
+#from .serializers import UsuarioSerializer
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from django.shortcuts import get_object_or_404
+from rest_framework.generics import GenericAPIView
+
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
     permission_classes = [IsAuthenticated]
@@ -25,6 +27,35 @@ class PasswordCuentaEspecialViewset(ModelViewSet):
 class obtenerParTokenView(TokenObtainPairView):
     serializer_class= serializadorObtenerParToken
     permission_classes = (AllowAny, )
+    '''
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        access_token = response.data.get("access")
+        refresh_token = response.data.get("refresh")
+        if refresh_token and access_token:
+            del response.data["refresh"]
+            del response.data["access"]
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=True,        # Usa HTTPS en producción
+                samesite="Lax",     # Ajusta según tus necesidades
+                max_age=7 * 24 * 60 * 60,
+                path="/api/token/refresh/",  # Donde se usará
+            )
+            response.set_cookie(
+                key="access_token",
+                value=refresh_token,
+                httponly=True,
+                secure=True,        # Usa HTTPS en producción
+                samesite="Lax",     # Ajusta según tus necesidades
+                max_age=7 * 24 * 60 * 60,
+                path="/api/token/refresh/",  # Donde se usará
+            )
+
+        return response
+    '''
 
 class RegistrarView(generics.CreateAPIView):
     queryset = Usuario.objects.all()
@@ -69,6 +100,29 @@ class PerfilUsuarioAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CambiarEstadoUsuarioView(APIView):
+    permission_classes = [AllowAny]
+
+    def patch(self, request):
+        correo = request.data.get("correoElectronico")
+        if not correo:
+            return Response("El campo 'correoElectronico' es requerido.", status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            usuario = Usuario.objects.get(correoElectronico=correo)
+        except Usuario.DoesNotExist:
+            return Response("Usuario no encontrado con ese correo.", status=status.HTTP_404_NOT_FOUND)
+
+        # Verificación de permisos
+        if request.user != usuario or not (request.user.is_staff or request.user.is_superuser):
+            return Response("No puedes modificar el estado de otro usuario.", status=status.HTTP_403_FORBIDDEN)
+
+        serializer = UsuarioIsActiveSerializer(usuario, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class ValidarCuentaEspecialView(APIView):
     permission_classes = [AllowAny]

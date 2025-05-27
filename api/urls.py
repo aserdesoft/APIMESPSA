@@ -15,6 +15,7 @@ urlpatterns = [
     path("combinaciones/", ObtenerCuentasView.as_view()),
     path("validarCuentaEsp/",ValidarCuentaEspecialView.as_view()),
     path("dashboard/perfil/", PerfilUsuarioAPIView.as_view(), name="perfil-usuario"),
+    path('usuarios/activar/', CambiarEstadoUsuarioView.as_view(), name='cambiar-estado-usuario'),
     path("personas/",ObtenerPersonasView.as_view()),
     path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
     path("listar-usuarios/", ListarUsuariosView.as_view(), name="listar-usuarios"),

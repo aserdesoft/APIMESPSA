@@ -131,7 +131,7 @@ class RegistrarSerializador(serializers.ModelSerializer):
 
         tipo_cuenta = perfil_data.get("tipoCuenta")
         if tipo_cuenta == TipoCuenta.EMPLEADO:
-            user = UsuarioSerializer.objects.create_empleado(
+            user = Usuario.objects.create_empleado(
                 correoElectronico=validated_data["correoElectronico"],
                 password=validated_data["password"]
             )
@@ -144,6 +144,7 @@ class RegistrarSerializador(serializers.ModelSerializer):
         # Aquí ya perfil_data está validado porque DRF lo validó antes de `create`
         Perfil.objects.create(usuario=user, **perfil_data)
         return user
+
 class ValidarCuentaEspecialSerializador(serializers.ModelSerializer):
     class Meta:
         model = PasswordCuentaEspecial
@@ -171,14 +172,22 @@ class PerfilDashboardSerializador(serializers.ModelSerializer):
         queryset=UsoCFDI.objects.all(), required=False, allow_null=True
     )
     correoElectronico = serializers.EmailField(source="usuario.correoElectronico", required=False)
-
+    RFC = serializers.CharField(
+        required=False,
+        validators=[
+            UniqueValidator(
+                queryset=Perfil.objects.all(),
+                message="RFC ya utilizado"
+            )
+        ]
+    )
     class Meta:
         model = Perfil
         fields = [
             "correoElectronico", "apellidos", "nombre", "telefono", "tipoCuenta",
             "tipoEmpleado", "tipoPersona", "RFC", "calle", "numExt", "numInt",
             "colonia", "codigoPostal", "localidad", "municipio", "estado",
-            "nomEmpresa", "referencia", "usoCFDI", "cuentaBancaria", "CLABE",
+            "nomEmpresa", "usoCFDI", "cuentaBancaria", "CLABE",
             "Banco", "constanciaFiscal",
         ]
 
@@ -206,20 +215,27 @@ class PerfilDashboardSerializador(serializers.ModelSerializer):
         # Validar que el correo no exista en otro usuario
         if correo and correo != instance.usuario.correoElectronico:
             if Usuario.objects.filter(correoElectronico=correo).exclude(id=instance.usuario.id).exists():
-                raise serializers.ValidationError({"correoElectronico": "Correo ya utilizado."})
-
-        # Actualizar Perfil
+                raise serializers.ValidationError({"correoElectronico": "Correo  electrónico ya utilizado."})
+        # Actualizar campos del perfil
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        # Actualizar Usuario
+        # Actualizar correo del usuario si fue modificado
         if correo:
             usuario = instance.usuario
             usuario.correoElectronico = correo
             usuario.save()
 
         return instance
+
+class UsuarioIsActiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = ['is_active']
+    
+    
+    
     
 #Serializador para la app de escritorio Login   
 class ValidarUsuarioSimpleSerializer(serializers.Serializer):
