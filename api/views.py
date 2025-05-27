@@ -107,14 +107,12 @@ class CambiarEstadoUsuarioView(APIView):
         correo = request.data.get("correoElectronico")
         if not correo:
             return Response("El campo 'correoElectronico' es requerido.", status=status.HTTP_400_BAD_REQUEST)
-
         try:
             usuario = Usuario.objects.get(correoElectronico=correo)
         except Usuario.DoesNotExist:
             return Response("Usuario no encontrado con ese correo.", status=status.HTTP_404_NOT_FOUND)
-
         # Verificación de permisos
-        if request.user != usuario or not (request.user.is_staff or request.user.is_superuser):
+        if request.user != usuario and not (request.user.is_staff or request.user.is_superuser):
             return Response("No puedes modificar el estado de otro usuario.", status=status.HTTP_403_FORBIDDEN)
 
         serializer = UsuarioIsActiveSerializer(usuario, data=request.data, partial=True)

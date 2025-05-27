@@ -83,7 +83,7 @@ class Perfil(models.Model):
     # Datos extras para completar el perfil
     RFC = models.CharField(max_length=13, unique=True, null=True, default=None)
     calle = models.CharField(max_length=300, blank=True, default="")
-    numExt = models.PositiveIntegerField(null= True, default=None)
+    numExt = models.CharField(max_length=50, blank=True, default="")
     numInt = models.CharField(max_length=50, blank=True, default="")
     colonia = models.CharField(max_length=300, blank=True, default="")
     codigoPostal = models.PositiveIntegerField(null= True,default=None)
