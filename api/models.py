@@ -97,7 +97,7 @@ class Perfil(models.Model):
     cuentaBancaria = models.CharField(max_length=20, blank=True, default="")
     CLABE = models.CharField(max_length=18, blank=True, default="")
     Banco = models.CharField(max_length=100, blank=True, default="")
-    constanciaFiscal = models.BinaryField(null=True)
+    constanciaFiscal = models.FileField(upload_to="constancias", blank=True, null=True)
 
     def clean(self):
         # Campos requeridos para cualquier usuario
