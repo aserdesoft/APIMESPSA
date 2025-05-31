@@ -1,7 +1,9 @@
 from django.urls import path,include
 from rest_framework_simplejwt.views import TokenRefreshView
-from api.views import *
-from .views import UsuarioEditarPorCorreoAPIView
+from api.Views.FiscalViews import *
+from api.Views.UsuarioViews import *
+from api.Views.UsuarioEscritorioViews import *
+from api.Views.ProductoServicioViews import *
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register('CFDI',UsoCFDIViewset,'usocfdi')

@@ -1,5 +1,7 @@
 from django.contrib import admin
-from api.models import Usuario, Perfil,UsoCFDI,PasswordCuentaEspecial
+from api.models import Usuario
+from api.Models.UsuarioModels import Perfil,PasswordCuentaEspecial
+from api.Models.FiscalModels import UsoCFDI
 
 class UsuarioAdmin(admin.ModelAdmin):
     list_display = ['correoElectronico']
