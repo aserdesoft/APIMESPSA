@@ -1,5 +1,5 @@
 #serializadores para los objetos entre la base de datos y la API
-from api.models import Usuario,Perfil,UsoCFDI,PasswordCuentaEspecial
+from api.models import *
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -21,14 +21,14 @@ class serializadorObtenerParToken(TokenObtainPairSerializer):
             raise AuthenticationFailed("Usuario o contraseña incorrectos")
 #serializador para contraseñas de clientes a usuario
 class PasswordCuentaEspecialSerializador(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True) 
+    passwordVisible = serializers.CharField(write_only=True) 
     class Meta:
         model = PasswordCuentaEspecial
-        fields = ["password", "cuentaValidada"]
+        fields = ["passwordVisible", "cuentaValidada"]
 
     def create(self, validated_data):
         """Se asegura de que la contraseña se encripte antes de crear el objeto."""
-        validated_data["password"] = make_password(validated_data["password"])  # Encripta la contraseña
+        validated_data["password"] = make_password(validated_data["passwordVisible"])  # Encripta la contraseña
         return super().create(validated_data)
     
        
@@ -233,10 +233,63 @@ class UsuarioIsActiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = ['is_active']
-    
-    
-    
-    
+
+#serializador para registro de Unidades
+class UnidadSerializer(serializers.ModelSerializer):
+    descripcion = serializers.CharField(required=False)
+
+    class Meta:
+        model = Unidad
+        fields = ["claveUnidad", "descripcion"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.partial:  # This ensures that PATCH can accept partial updates
+            for field in self.fields.values():
+                field.required = False
+class ArticuloSerializadorExterno(serializers.ModelSerializer):
+    categoria = serializers.PrimaryKeyRelatedField(
+        queryset=Categoria.objects.all(), required=False, allow_null=True
+    )
+    claveUnidad = serializers.PrimaryKeyRelatedField(
+        queryset=Unidad.objects.all(), required=False, allow_null=True
+    )
+    class Meta:
+        model = Articulo
+        fields = [
+            "id","nombre", "descripcion", "tipoArticulo", "categoria","claveUnidad","valorUnitario", 'imagenes'
+        ]
+class ArticuloSerializadorInterno(serializers.ModelSerializer):
+    categoria = serializers.PrimaryKeyRelatedField(
+        queryset=Categoria.objects.all(), required=False, allow_null=True
+    )
+    claveUnidad = serializers.PrimaryKeyRelatedField(
+        queryset=Unidad.objects.all(), required=False, allow_null=True
+    )
+    class Meta:
+        model = Articulo
+        fields = [
+            "id","nombre", "descripcion","claveUnidad","claveFiscal", "tipoArticulo", "categoria","valorUnitario", 'imagenes'
+        ]
+
+#Serializador para categorias
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria
+        fields = ["nombre"]
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            if self.partial:  # This ensures that PATCH can accept partial updates
+                for field in self.fields.values():
+                    field.required = False
+
+class ImagenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Imagen
+        fields = ['id', 'archivo', 'articulo']
+
+
+#Serializadores de la app de escritorio
 #Serializador para la app de escritorio Login   
 class ValidarUsuarioSimpleSerializer(serializers.Serializer):
     correoElectronico = serializers.EmailField()

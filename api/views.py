@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
 from rest_framework.response import Response
-from api.utils import TipoCuenta
+from api.utils import TipoCuenta,ArticuloPagination
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view
@@ -16,8 +16,11 @@ from rest_framework.generics import GenericAPIView
 
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
-    permission_classes = [IsAuthenticated]
     serializer_class = UsoCFDISerializer
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 class PasswordCuentaEspecialViewset(ModelViewSet):
     queryset = PasswordCuentaEspecial.objects.all()
@@ -106,7 +109,7 @@ class CambiarEstadoUsuarioView(APIView):
     def patch(self, request):
         correo = request.data.get("correoElectronico")
         if not correo:
-            return Response("El campo 'correoElectronico' es requerido.", status=status.HTTP_400_BAD_REQUEST)
+            return Response("El campo de correo electronico es requerido.", status=status.HTTP_400_BAD_REQUEST)
         try:
             usuario = Usuario.objects.get(correoElectronico=correo)
         except Usuario.DoesNotExist:
@@ -138,6 +141,94 @@ class ValidarCuentaEspecialView(APIView):
             return Response({"mensaje": "OK"}, status=status.HTTP_200_OK)
 
         return Response({"mensaje": "ERROR", "detalles": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class UnidadViewset(ModelViewSet):
+    queryset = Unidad.objects.all().order_by("claveUnidad")
+    serializer_class = UnidadSerializer
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+class CategoriaViewset(ModelViewSet):
+    queryset = Categoria.objects.all().order_by("nombre")
+    serializer_class = CategoriaSerializer
+    pagination_class = ArticuloPagination
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+class ProductosViewset(ModelViewSet):
+    queryset = Articulo.objects.filter(tipoArticulo="PDT").order_by("nombre")
+    pagination_class = ArticuloPagination
+
+    @action(detail=False, methods=['get'])
+    def obtener_por_filtro(self, request):
+        categoria = request.query_params.get('categoria')
+        if categoria:
+            queryset = Articulo.objects.filter(tipoArticulo="PDT", categoria=categoria).order_by("nombre")
+        else:
+            queryset = Articulo.objects.filter(tipoArticulo="PDT").order_by("nombre")
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated(), IsAdminUser()]
+
+    def get_serializer_class(self):
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return ArticuloSerializadorInterno
+        return ArticuloSerializadorExterno
+
+class ServiciosViewset(ModelViewSet):
+    queryset = Articulo.objects.filter(tipoArticulo="SRV").order_by("nombre")
+    pagination_class = ArticuloPagination
+    
+    @action(detail=False, methods=['get'])
+    def obtener_por_filtro(self, request):
+        categoria = request.query_params.get('categoria')
+        if categoria:
+            queryset = Articulo.objects.filter(tipoArticulo="SRV", categoria=categoria).order_by("nombre")
+        else:
+            queryset = Articulo.objects.filter(tipoArticulo="SRV").order_by("nombre")
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated(), IsAdminUser()]
+
+    def get_serializer_class(self):
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return ArticuloSerializadorInterno
+        return ArticuloSerializadorExterno
+    
+class ImagenViewSet(viewsets.ModelViewSet):
+    queryset = Imagen.objects.all()
+    serializer_class = ImagenSerializer
+
+    @action(detail=False, methods=['post'])
+    def subir_multiples(self, request):
+        archivos = request.FILES.getlist('archivos')
+        articulo_id = request.data.get('articulo')
+
+        if not archivos or not articulo_id:
+            return Response({'error': 'Debes proporcionar archivos y el ID del artículo'}, status=status.HTTP_400_BAD_REQUEST)
+
+        imagenes_creadas = []
+        for archivo in archivos:
+            imagen = Imagen(archivo=archivo, articulo_id=articulo_id)
+            imagen.save()
+            imagenes_creadas.append(imagen)
+
+        serializer = self.get_serializer(imagenes_creadas, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 #Vista para el login desde la app de escritorio
 class LoginWinFormsView(APIView):
     def post(self, request):

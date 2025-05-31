@@ -1,4 +1,5 @@
 from django.db import models
+from rest_framework.pagination import PageNumberPagination
 
 class TipoCuenta(models.TextChoices):
     CLIENTE = "CLI", "Cliente"
@@ -52,3 +53,11 @@ class TipoEmpleado(models.TextChoices):
     SERVICIOS = "SERV","Servicios"
     FINANZAS = "FIN","Finanzas"
 
+class TipoArticulo(models.TextChoices):
+    PRODUCTO = "PDT","Producto"
+    SERVICIO = "SRV", "Servicio"
+
+class ArticuloPagination(PageNumberPagination):
+    page_size = 20 
+    page_size_query_param = 'page_size'
+    max_page_size = 100

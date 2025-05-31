@@ -6,7 +6,11 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register('CFDI',UsoCFDIViewset,'usocfdi')
 router.register('passwords',PasswordCuentaEspecialViewset,'passwords')
-
+router.register('unidades',UnidadViewset,'unidades')
+router.register('categorias',CategoriaViewset,'categorias')
+router.register('productos',ProductosViewset,'productos')
+router.register('servicios',ServiciosViewset,'servicios')
+router.register('imagenes', ImagenViewSet,'imagenes')
 urlpatterns = [
     path('',include(router.urls)),
     path("token/",obtenerParTokenView.as_view()),

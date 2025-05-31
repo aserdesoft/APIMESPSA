@@ -15,8 +15,10 @@ class UsoCFDIAdmin(admin.ModelAdmin):
     search_fields = ["descripcion"]
 
 class PasswordCuentaEspecialAdmin(admin.ModelAdmin):
-    list_display = ["id","password", "cuentaValidada"]
+    list_display = ["id"]
     search_fields = ["cuentaValidada"]
+
+
 
 admin.site.register(Usuario, UsuarioAdmin)
 admin.site.register(Perfil, PerfilAdmin)
