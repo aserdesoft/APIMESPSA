@@ -18,6 +18,10 @@ urlpatterns = [
     path("personas/",ObtenerPersonasView.as_view()),
     path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
     path("listar-usuarios/", ListarUsuariosView.as_view(), name="listar-usuarios"),
+<<<<<<< Updated upstream
    path('api/usuarios/editar-usuario-por-correo/<str:correo>/', views.EditarUsuarioPorCorreoView.as_view()),
 
+=======
+    path('editar-usuario-por-correo/<str:correo>/', EditarUsuarioPorCorreoView.as_view(), name='editar_usuario_por_correo'),
+>>>>>>> Stashed changes
 ]
