@@ -239,3 +239,7 @@ class ValidarUsuarioSimpleSerializer(serializers.Serializer):
         
         data["usuario"] = user
         return data
+class UsuarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = '__all__' 

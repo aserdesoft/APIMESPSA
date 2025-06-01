@@ -9,8 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view
 from .serializers import UsuarioSerializer
-from rest_framework.decorators import action
-from rest_framework import viewsets, status
+from urllib.parse import unquote
 from django.shortcuts import get_object_or_404
 class UsoCFDIViewset(ModelViewSet):
     queryset = UsoCFDI.objects.all().order_by("usoCFDI")
@@ -105,11 +104,12 @@ class ListarUsuariosView(generics.ListAPIView):
         if tipo_cuenta is not None:
             queryset = queryset.filter(tipoCuenta=tipo_cuenta)
         return queryset
-
-class UsuarioEditarPorCorreoAPIView(APIView):
+class EditarUsuarioPorCorreoView(APIView):
     def patch(self, request, correo):
+        correo = unquote(correo)  # Decodifica %40 a @
+
         try:
-            usuario = Usuario.objects.get(correoElectronico=correo)
+            usuario = Usuario.objects.get(correo_electronico=correo)
         except Usuario.DoesNotExist:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
