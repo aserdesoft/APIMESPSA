@@ -174,10 +174,12 @@ CORS_ALLOW_ALL_ORIGINS=False
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://mespsa.frontend.bucket.s3-website.us-east-2.amazonaws.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
+    "http://mespsa.frontend.bucket.s3-website.us-east-2.amazonaws.com"
 ]
 
 CORS_ALLOWS_CREDENTIALS=True
