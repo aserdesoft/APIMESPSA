@@ -213,4 +213,7 @@ class PerfilDashboardSerializador(serializers.ModelSerializer):
 class UsuarioIsActiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = ['is_active']
+        fields = ['is_active']class UsuarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = '__all__' 

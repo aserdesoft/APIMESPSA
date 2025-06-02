@@ -5,6 +5,18 @@ from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
 from rest_framework.response import Response
 from rest_framework import generics, status
 from api.Serializers.UsuarioSerializers import *
+from api.utils import TipoCuenta
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import api_view
+from .serializers import UsuarioSerializer
+from urllib.parse import unquote
+from django.shortcuts import get_object_or_404
+class UsoCFDIViewset(ModelViewSet):
+    queryset = UsoCFDI.objects.all().order_by("usoCFDI")
+    permission_classes = [IsAuthenticated]
+    serializer_class = UsoCFDISerializer
+
 class PasswordCuentaEspecialViewset(ModelViewSet):
     queryset = PasswordCuentaEspecial.objects.all()
     permission_classes = [IsAdminUser]
@@ -124,3 +136,36 @@ class ValidarCuentaEspecialView(APIView):
             return Response({"mensaje": "OK"}, status=status.HTTP_200_OK)
 
         return Response({"mensaje": "ERROR", "detalles": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+#Vista para el login desde la app de escritorio
+class LoginWinFormsView(APIView):
+    def post(self, request):
+        serializer = ValidarUsuarioSimpleSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"resultado": "OK"}, status=status.HTTP_200_OK)
+        return Response({"resultado": "ERROR"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+
+class ListarUsuariosView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = PerfilDashboardSerializador
+
+    def get_queryset(self):
+        queryset = Perfil.objects.all()
+        tipo_cuenta = self.request.query_params.get('tipoCuenta', None)
+        if tipo_cuenta is not None:
+            queryset = queryset.filter(tipoCuenta=tipo_cuenta)
+        return queryset
+class EditarUsuarioPorCorreoView(APIView):
+    def patch(self, request, correo):
+        correo = unquote(correo)  # Decodifica %40 a @
+
+        try:
+            usuario = Usuario.objects.get(correo_electronico=correo)
+        except Usuario.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
