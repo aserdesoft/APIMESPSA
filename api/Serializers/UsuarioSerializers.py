@@ -1,5 +1,5 @@
 #serializadores para los objetos entre la base de datos y la API
-from api.models import Usuario,Perfil,UsoCFDI,PasswordCuentaEspecial
+from api.Models.UsuarioModels import Usuario,Perfil,UsoCFDI,PasswordCuentaEspecial
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
