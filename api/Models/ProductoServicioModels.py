@@ -16,7 +16,7 @@ class Articulo(models.Model):
     claveUnidad = models.ForeignKey(Unidad,to_field="claveUnidad", on_delete=models.SET_DEFAULT, null=True ,default=None,blank=True)
     claveFiscal = models.CharField(max_length=8, blank=True, default="")
     tipoArticulo = models.CharField(max_length=3,choices=TipoArticulo,default=TipoArticulo.PRODUCTO)
-    categoria = models.ForeignKey(Categoria,to_field="nombre", on_delete=models.SET_DEFAULT, null=True ,default=None,blank=True)
+    categoria = models.ForeignKey(Categoria,to_field="nombre", on_delete=models.SET_NULL, null=True ,default=None,blank=True)
     valorUnitario = models.DecimalField(decimal_places=2,max_digits=12,null=True,default=None)
 
 class Imagen(models.Model):

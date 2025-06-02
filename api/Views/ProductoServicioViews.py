@@ -3,9 +3,11 @@ from rest_framework.permissions import AllowAny,IsAuthenticated,IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
+from django_filters import rest_framework as filters
 from api.Models.ProductoServicioModels import *
 from api.Serializers.ProductoServicioSerializers import *
 from api.utils import ArticuloPagination
+from api.utils import FiltroArticulo
 class UnidadViewset(ModelViewSet):
     queryset = Unidad.objects.all().order_by("claveUnidad")
     serializer_class = UnidadSerializer
@@ -17,7 +19,6 @@ class UnidadViewset(ModelViewSet):
 class CategoriaViewset(ModelViewSet):
     queryset = Categoria.objects.all().order_by("nombre")
     serializer_class = CategoriaSerializer
-    pagination_class = ArticuloPagination
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
@@ -25,6 +26,8 @@ class CategoriaViewset(ModelViewSet):
 class ProductosViewset(ModelViewSet):
     queryset = Articulo.objects.filter(tipoArticulo="PDT").order_by("nombre")
     pagination_class = ArticuloPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = FiltroArticulo
     """
     @action(detail=False, methods=['get'])
     def obtener_por_filtro(self, request):
@@ -35,21 +38,26 @@ class ProductosViewset(ModelViewSet):
             queryset = Articulo.objects.filter(tipoArticulo="PDT").order_by("nombre")
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    """
+    
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated(), IsAdminUser()]
-
+    """
     def get_serializer_class(self):
         user = self.request.user
         if user.is_staff or user.is_superuser:
             return ArticuloSerializadorInterno
-        return ArticuloSerializadorExterno
+        elif self.action == 'retrieve':
+            return ArticuloSerializadorIndExterno
+        return ArticuloSerializadorListaExterno
+            
 
 class ServiciosViewset(ModelViewSet):
     queryset = Articulo.objects.filter(tipoArticulo="SRV").order_by("nombre")
     pagination_class = ArticuloPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = FiltroArticulo
     """
     @action(detail=False, methods=['get'])
     def obtener_por_filtro(self, request):
@@ -60,18 +68,21 @@ class ServiciosViewset(ModelViewSet):
             queryset = Articulo.objects.filter(tipoArticulo="SRV").order_by("nombre")
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    """
+    
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated(), IsAdminUser()]
-
+    """
     def get_serializer_class(self):
         user = self.request.user
+        print(self.action == 'retrieve')
         if user.is_staff or user.is_superuser:
             return ArticuloSerializadorInterno
-        return ArticuloSerializadorExterno
-    
+        elif self.action == 'retrieve':
+            return ArticuloSerializadorIndExterno
+        return ArticuloSerializadorListaExterno
+
 class ImagenViewSet(ModelViewSet):
     queryset = Imagen.objects.all()
     @action(detail=False, methods=['post'])
@@ -90,13 +101,15 @@ class ImagenViewSet(ModelViewSet):
 
         serializer = self.get_serializer(imagenes_creadas, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    """
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated(), IsAdminUser()]
-
+    """
     def get_serializer_class(self):
-        user = self.request.user
-        if user.is_staff or user.is_superuser:
-            return ImagenSerializerInterno
-        return ImagenSerializerExterno
+        #user = self.request.user
+        #if user.is_staff or user.is_superuser:
+        return ImagenSerializerInterno
+        #return ImagenSerializerExterno
+    

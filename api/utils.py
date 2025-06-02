@@ -1,5 +1,6 @@
 from django.db import models
 from rest_framework.pagination import PageNumberPagination
+from django_filters import rest_framework as filters
 
 class TipoCuenta(models.TextChoices):
     CLIENTE = "CLI", "Cliente"
@@ -61,3 +62,14 @@ class ArticuloPagination(PageNumberPagination):
     page_size = 20 
     page_size_query_param = 'page_size'
     max_page_size = 100
+
+from api.Models.ProductoServicioModels import Articulo
+class FiltroArticulo(filters.FilterSet):
+    precioMin = filters.NumberFilter(field_name="valorUnitario", lookup_expr='gte')
+    precioMax = filters.NumberFilter(field_name="valorUnitario", lookup_expr='lte')
+    nombre = filters.CharFilter(field_name='nombre', lookup_expr='icontains')
+    categoria = filters.CharFilter(field_name='categoria__nombre', lookup_expr='icontains')
+    tipoArticulo = filters.CharFilter(field_name='tipoArticulo')
+    class Meta:
+        model = Articulo
+        fields = ['nombre', 'categoria','tipoArticulo','precioMin', 'precioMax']
