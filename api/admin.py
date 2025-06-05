@@ -2,6 +2,7 @@ from django.contrib import admin
 from api.models import Usuario
 from api.Models.UsuarioModels import Perfil,PasswordCuentaEspecial
 from api.Models.FiscalModels import UsoCFDI
+from api.Models.ProductoServicioModels import Articulo,Imagen
 
 class UsuarioAdmin(admin.ModelAdmin):
     list_display = ['correoElectronico']
@@ -20,9 +21,19 @@ class PasswordCuentaEspecialAdmin(admin.ModelAdmin):
     list_display = ["id"]
     search_fields = ["cuentaValidada"]
 
+class ArticuloAdmin(admin.ModelAdmin):
+    list_display = ["nombre","categoria","tipoArticulo"]
+    search_fields = ["nombre"]
+class ImagenAdmin(admin.ModelAdmin):
+    list_display = ["articulo"]
+    search_fields = ["articulo"]
+
 
 
 admin.site.register(Usuario, UsuarioAdmin)
 admin.site.register(Perfil, PerfilAdmin)
 admin.site.register(UsoCFDI,UsoCFDIAdmin)
 admin.site.register(PasswordCuentaEspecial,PasswordCuentaEspecialAdmin)
+admin.site.register(Articulo,ArticuloAdmin)
+admin.site.register(Imagen,ImagenAdmin)
+

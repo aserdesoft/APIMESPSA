@@ -69,7 +69,12 @@ class FiltroArticulo(filters.FilterSet):
     precioMax = filters.NumberFilter(field_name="valorUnitario", lookup_expr='lte')
     nombre = filters.CharFilter(field_name='nombre', lookup_expr='icontains')
     categoria = filters.CharFilter(field_name='categoria__nombre', lookup_expr='icontains')
-    tipoArticulo = filters.CharFilter(field_name='tipoArticulo')
     class Meta:
         model = Articulo
-        fields = ['nombre', 'categoria','tipoArticulo','precioMin', 'precioMax']
+        fields = ['nombre', 'categoria','precioMin', 'precioMax']
+from api.Models.ProductoServicioModels import Categoria
+class FiltroCategoria(filters.FilterSet):
+    tipoArticulo = filters.CharFilter(field_name='tipoArticulo')
+    class Meta:
+        model = Categoria
+        fields = ['tipoArticulo']

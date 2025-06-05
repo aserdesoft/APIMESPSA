@@ -7,38 +7,35 @@ from django_filters import rest_framework as filters
 from api.Models.ProductoServicioModels import *
 from api.Serializers.ProductoServicioSerializers import *
 from api.utils import ArticuloPagination
-from api.utils import FiltroArticulo
+from api.utils import FiltroArticulo,FiltroCategoria
 class UnidadViewset(ModelViewSet):
     queryset = Unidad.objects.all().order_by("claveUnidad")
     serializer_class = UnidadSerializer
+    """ 
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [IsAuthenticated(), IsAdminUser()]
+    """
 
 class CategoriaViewset(ModelViewSet):
     queryset = Categoria.objects.all().order_by("nombre")
     serializer_class = CategoriaSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = FiltroCategoria
+    """ 
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [IsAuthenticated(), IsAdminUser()]
+    """
+
 class ProductosViewset(ModelViewSet):
-    queryset = Articulo.objects.filter(tipoArticulo="PDT").order_by("nombre")
+    queryset = Articulo.objects.filter(tipoArticulo=TipoArticulo.PRODUCTO).order_by("nombre")
     pagination_class = ArticuloPagination
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = FiltroArticulo
-    """
-    @action(detail=False, methods=['get'])
-    def obtener_por_filtro(self, request):
-        categoria = request.query_params.get('categoria')
-        if categoria:
-            queryset = Articulo.objects.filter(tipoArticulo="PDT", categoria=categoria).order_by("nombre")
-        else:
-            queryset = Articulo.objects.filter(tipoArticulo="PDT").order_by("nombre")
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
+    """ 
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
@@ -54,21 +51,11 @@ class ProductosViewset(ModelViewSet):
             
 
 class ServiciosViewset(ModelViewSet):
-    queryset = Articulo.objects.filter(tipoArticulo="SRV").order_by("nombre")
+    queryset = Articulo.objects.filter(tipoArticulo=TipoArticulo.SERVICIO).order_by("nombre")
     pagination_class = ArticuloPagination
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = FiltroArticulo
     """
-    @action(detail=False, methods=['get'])
-    def obtener_por_filtro(self, request):
-        categoria = request.query_params.get('categoria')
-        if categoria:
-            queryset = Articulo.objects.filter(tipoArticulo="SRV", categoria=categoria).order_by("nombre")
-        else:
-            queryset = Articulo.objects.filter(tipoArticulo="SRV").order_by("nombre")
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
@@ -76,7 +63,6 @@ class ServiciosViewset(ModelViewSet):
     """
     def get_serializer_class(self):
         user = self.request.user
-        print(self.action == 'retrieve')
         if user.is_staff or user.is_superuser:
             return ArticuloSerializadorInterno
         elif self.action == 'retrieve':

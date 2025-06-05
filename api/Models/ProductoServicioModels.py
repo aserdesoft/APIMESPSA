@@ -9,9 +9,10 @@ class Unidad(models.Model):
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=500,primary_key=True)
+    tipoArticulo = models.CharField(max_length=3,choices=TipoArticulo,default=TipoArticulo.PRODUCTO)
 
 class Articulo(models.Model):
-    nombre = models.CharField(max_length=300,default="")
+    nombre = models.CharField(max_length=300,default="",unique=True)
     descripcion = models.TextField(default="")
     claveUnidad = models.ForeignKey(Unidad,to_field="claveUnidad", on_delete=models.SET_DEFAULT, null=True ,default=None,blank=True)
     claveFiscal = models.CharField(max_length=8, blank=True, default="")
@@ -20,5 +21,5 @@ class Articulo(models.Model):
     valorUnitario = models.DecimalField(decimal_places=2,max_digits=12,null=True,default=None)
 
 class Imagen(models.Model):
-    archivo = models.FileField(upload_to="imagenes",blank=True, null=True)
+    archivo = models.ImageField(upload_to="imagenes",blank=True, null=True)
     articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE,related_name="imagenes")
