@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from api.utils import TipoPersona,TipoEmpleado,TipoCuenta
 from api.Models.FiscalModels import UsoCFDI
 from api.models import Usuario
-
 class Perfil(models.Model):
     # Datos requeridos para el registro
     apellidos = models.CharField(max_length=150,default="")
@@ -53,7 +52,7 @@ class Perfil(models.Model):
 #Modelo para manejar las contraseñas para crear cuentas de 
 class PasswordCuentaEspecial(models.Model):
     password = models.CharField(max_length=128)
-    passwordVisible = models.CharField(max_length=300,unique=True)
+    passwordVisible = models.CharField(max_length=255,unique=True)
     cuentaValidada = models.CharField(
         max_length=3,
         choices=TipoCuenta.cuentasDetrasPassword(),

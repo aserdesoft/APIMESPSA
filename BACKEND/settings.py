@@ -100,17 +100,16 @@ TEMPLATES = [
         },
     },
 ]
-if DEBUG == True:
-    # Email settings
-    EMAIL_BACKEND = env("EMAIL_BACKEND")
-    EMAIL_HOST = env("EMAIL_HOST")
-    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-    EMAIL_PORT = env("EMAIL_PORT")
-    EMAIL_USE_SSL = env("EMAIL_USE_SSL")
+# Email (AWS SES)
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
+AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
 
 
 WSGI_APPLICATION = 'BACKEND.wsgi.application'
+
 
 
 # Database
@@ -118,9 +117,14 @@ WSGI_APPLICATION = 'BACKEND.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=f'postgres://{env("DB_USER")}:{env("DB_PASSWORD")}@{env("DB_HOST")}:{env("DB_PORT")}/{env("DB_NAME")}',
+        default=f'postgres://{env("DB_USER_POST")}:{env("DB_PASSWORD_POST")}@{env("DB_HOST_POST")}:{env("DB_PORT_POST")}/{env("DB_NAME_POST")}',
         engine='django.db.backends.postgresql_psycopg2'
     )
+}
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
 }
 """
 DATABASES = {

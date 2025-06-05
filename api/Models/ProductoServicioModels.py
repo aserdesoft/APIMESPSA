@@ -8,11 +8,11 @@ class Unidad(models.Model):
         return self.descripcion
 
 class Categoria(models.Model):
-    nombre = models.CharField(max_length=500,primary_key=True)
+    nombre = models.CharField(max_length=255,primary_key=True)
     tipoArticulo = models.CharField(max_length=3,choices=TipoArticulo,default=TipoArticulo.PRODUCTO)
 
 class Articulo(models.Model):
-    nombre = models.CharField(max_length=300,default="",unique=True)
+    nombre = models.CharField(max_length=255,default="",unique=True)
     descripcion = models.TextField(default="")
     claveUnidad = models.ForeignKey(Unidad,to_field="claveUnidad", on_delete=models.SET_DEFAULT, null=True ,default=None,blank=True)
     claveFiscal = models.CharField(max_length=8, blank=True, default="")

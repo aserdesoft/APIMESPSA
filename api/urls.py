@@ -4,6 +4,7 @@ from api.Views.FiscalViews import *
 from api.Views.UsuarioViews import *
 from api.Views.UsuarioEscritorioViews import *
 from api.Views.ProductoServicioViews import *
+from api.Views.EmailViews import *
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register('CFDI',UsoCFDIViewset,'usocfdi')
@@ -22,6 +23,8 @@ urlpatterns = [
     path("validarCuentaEsp/",ValidarCuentaEspecialView.as_view()),
     path("dashboard/perfil/", PerfilUsuarioAPIView.as_view(), name="perfil-usuario"),
     path('usuarios/activar/', CambiarEstadoUsuarioView.as_view(), name='cambiar-estado-usuario'),
+    path("send-reset-code/", send_reset_code, name="send-reset-code"),
+    path("verify-reset-code/", verify_reset_code, name="verify-reset-code"),
     path("personas/",ObtenerPersonasView.as_view()),
     path("login-winforms/", LoginWinFormsView.as_view(), name="login-winforms"),
     path("listar-usuarios/", ListarUsuariosView.as_view(), name="listar-usuarios"),
