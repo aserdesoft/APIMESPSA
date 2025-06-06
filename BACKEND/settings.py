@@ -33,7 +33,7 @@ SECRET_KEY = env("SECRET_KEY") or os.environ.get('SECRET_KEY',default='your secr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['127.0.0.1','localhost',"https://main.d63jrt3rytqg8.amplifyapp.com"]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
@@ -100,14 +100,35 @@ TEMPLATES = [
         },
     },
 ]
-# Email (AWS SES)
-EMAIL_BACKEND = env("EMAIL_BACKEND")
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
-AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
-
-
+if DEBUG == True:
+    # Email (AWS SES)
+    EMAIL_BACKEND = env("EMAIL_BACKEND")
+    AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+    AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
+    AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        }
+    }
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': env("DB_NAME"),
+            'USER': env("DB_USER"),
+            'PASSWORD': env("DB_PASSWORD"),
+            'HOST': env("DB_HOST"),
+            'PORT': env("DB_PORT"),
+        }
+    }
+else:
+    DATABASES = {
+    'default': dj_database_url.config(
+        default=f'postgres://{env("DB_USER_POST")}:{env("DB_PASSWORD_POST")}@{env("DB_HOST_POST")}:{env("DB_PORT_POST")}/{env("DB_NAME_POST")}',
+        engine='django.db.backends.postgresql_psycopg2'
+    )
+}
 WSGI_APPLICATION = 'BACKEND.wsgi.application'
 
 
@@ -115,29 +136,7 @@ WSGI_APPLICATION = 'BACKEND.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f'postgres://{env("DB_USER_POST")}:{env("DB_PASSWORD_POST")}@{env("DB_HOST_POST")}:{env("DB_PORT_POST")}/{env("DB_NAME_POST")}',
-        engine='django.db.backends.postgresql_psycopg2'
-    )
-}
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
-    }
-}
-"""
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
