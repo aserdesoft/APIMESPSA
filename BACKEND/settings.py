@@ -15,7 +15,6 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import environ
 import os
-import dj_database_url
 load_dotenv()
 env = environ.Env()
 environ.Env.read_env()
@@ -28,23 +27,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY") or os.environ.get('SECRET_KEY',default='your secret key')
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ['127.0.0.1','localhost']
-
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 #configuración para JWT
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        
     ),
 }
 
@@ -100,44 +93,60 @@ TEMPLATES = [
         },
     },
 ]
-# Email (AWS SES)
-EMAIL_BACKEND = env("EMAIL_BACKEND")
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
-AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
+
+if DEBUG:
+    # Email (AWS SES)
+    EMAIL_BACKEND = env("EMAIL_BACKEND")
+    EMAIL_HOST_USER = env("AWS_ACCESS_KEY_ID")
+    EMAIL_HOST_PASSWORD = env("AWS_SECRET_ACCESS_KEY")
+    AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
+    EMAIL_HOST = env("AWS_SES_REGION_ENDPOINT")
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS= True
+    DEFAULT_FROM_EMAIL = 'mespsa250609@gmail.com'
+else:
+    # Email (AWS SES)
+    EMAIL_BACKEND = env("EMAIL_BACKEND")
+    EMAIL_HOST_USER = env("AWS_ACCESS_KEY_ID")
+    EMAIL_HOST_PASSWORD = env("AWS_SECRET_ACCESS_KEY")
+    AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
+    EMAIL_HOST = env("AWS_SES_REGION_ENDPOINT")
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS= True
+    DEFAULT_FROM_EMAIL = 'mespsa250609@gmail.com'
 
 
 WSGI_APPLICATION = 'BACKEND.wsgi.application'
 
-
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f'postgres://{env("DB_USER_POST")}:{env("DB_PASSWORD_POST")}@{env("DB_HOST_POST")}:{env("DB_PORT_POST")}/{env("DB_NAME_POST")}',
-        engine='django.db.backends.postgresql_psycopg2'
-    )
-}
-CACHES = {
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': env("DB_NAME_DEBUG"),
+            'USER': env("DB_USER_DEBUG"),
+            'PASSWORD': env("DB_PASSWORD_DEBUG"),
+            'HOST': env("DB_HOST_DEBUG"),
+            'PORT': env("DB_PORT_DEBUG"),
+        }
+    }
+    CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': env("DB_NAME"),
+            'USER': env("DB_USER"),
+            'PASSWORD': env("DB_PASSWORD"),
+            'HOST': env("DB_HOST"),
+            'PORT': env("DB_PORT"),
+        }
     }
-}
-"""
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 

@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.cache import cache
 import secrets
+import threading
 
 def generar_codigo(longitud=6):
     rango_min = 10**(longitud - 1)
@@ -23,11 +24,10 @@ def send_reset_code(request):
     send_mail(
         'Código de restablecimiento seguro',
         f'Tu código de verificación es: {codigo}',
-        'tu-correo@tudominio.com',
         [email],
-        fail_silently=False,
+        fail_silently=False
     )
-
+    threading.Thread(target=send_reset_code, args=(email, codigo)).start()
     return Response({'message': 'Correo enviado'})
 
 @api_view(['POST'])
